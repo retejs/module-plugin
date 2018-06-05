@@ -37,9 +37,9 @@ export function install(editor, { engine, modules }) {
                     });
                 }
 
-                component.builder = (node) => {
+                component.builder = async (node) => {
                     component.updateModuleSockets(node);
-                    builder.call(component, node);
+                    await builder.call(component, node);
                 }    
 
                 component.worker = moduleManager.workerModule.bind(moduleManager);
