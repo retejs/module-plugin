@@ -1,5 +1,4 @@
 import { Input, Output } from 'rete';
-import { Module } from './module';
 import { ModuleManager } from './module-manager';
 
 function install(editor, { engine, modules }) {
@@ -30,11 +29,11 @@ function install(editor, { engine, modules }) {
                 node.outputs.length = 0;
 
                 moduleManager.getInputs(modules[node.data.module].data).forEach(i => {
-                    node.addInput(new Input(i.name, i.socket));
+                    node.addInput(new Input(i.name, i.name, i.socket));
                 });
     
                 moduleManager.getOutputs(modules[node.data.module].data).forEach(o => {
-                    node.addOutput(new Output(o.name, o.socket));
+                    node.addOutput(new Output(o.name, o.name, o.socket));
                 });
             }
 
@@ -49,6 +48,7 @@ function install(editor, { engine, modules }) {
             moduleManager.registerOutput(name, socket);
             component.worker = moduleManager.workerOutputs.bind(moduleManager);
             break;
+        default: break;
         }
     });
 }

@@ -33,7 +33,7 @@ export class ModuleManager {
         if (!this.modules[node.data.module]) return;
 
         var data = this.modules[node.data.module].data;
-        var module = new Module(data, this.inputs, this.outputs);
+        var module = new Module();
         var engine = this.engine.clone();
         
         module.read(inputs);
@@ -44,13 +44,13 @@ export class ModuleManager {
     workerInputs(node, inputs, outputs, { module } = {}) {
         if (!module) return;
             
-        outputs[0] = (module.inputs[node.data.name] || [])[0];
+        outputs['output'] = (module.getInput(node.data.name) || [])[0];
     }
         
     workerOutputs(node, inputs, outputs, { module } = {}) {
         if (!module) return;
 
-        module.outputs[node.data.name] = inputs[0][0];
+        module.setOutput(node.data.name, inputs['input'][0]);
     }
         
     setEngine(engine) {

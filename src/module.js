@@ -1,29 +1,26 @@
-import { extractNodes } from './utils';
-
 export class Module {
     
-    constructor(data, inputs, outputs) {
-        var inputs = extractNodes(data.nodes, inputs);
-        var outputs = extractNodes(data.nodes, outputs);
-    
-        this.inputs = [];
-        this.outputs = [];
-        this.keys = {
-            input: inputs.map(n => n.data.name),
-            output: outputs.map(n => n.data.name)
-        };
+    constructor() {
+        this.inputs = {};
+        this.outputs = {};
     }
     
     read(inputs) {
-        this.keys.input.forEach((key, i) => {
-            this.inputs[key] = inputs[i];
-        });
+        this.inputs = inputs;
     }
     
     write(outputs) {
-        this.keys.output.forEach((k, i) => {
-            outputs[i] = this.outputs[k];
+        Object.keys(this.outputs).map(key => {
+            outputs[key] = this.outputs[key];
         });
+    }
+
+    getInput(key) {
+        return this.inputs[key];
+    }
+
+    setOutput(key, value) {
+        this.outputs[key] = value;
     }
 }
     
