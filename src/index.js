@@ -1,13 +1,32 @@
 import { Input, Output } from 'rete';
 import { ModuleManager } from './module-manager';
 
+function removeIO(node, editor) {
+    node.getConnections().forEach(c => editor.removeConnection(c));
+    Array.from(node.inputs.values()).forEach(input => node.removeInput(input));
+    Array.from(node.outputs.values()).forEach(output => node.removeOutput(output));
+}
+
+function addIO(node, inputs, outputs) {
+    const uniqueInputsCount = new Set(inputs.map(i => i.name)).size;
+    const uniqueOutputsCount = new Set(outputs.map(i => i.name)).size;
+
+    if (uniqueInputsCount !== inputs.length)
+        throw `Module ${node.data.module} has duplicate inputs`;
+    if (uniqueOutputsCount !== outputs.length)
+        throw `Module ${node.data.module} has duplicate outputs`;
+
+    inputs.forEach(i => node.addInput(new Input(i.name, i.name, i.socket)))
+    outputs.forEach(o => node.addOutput(new Output(o.name, o.name, o.socket)));
+}
+
 function install(editor, { engine, modules }) {
 
     var moduleManager = new ModuleManager(modules);
 
     moduleManager.setEngine(engine);
         
-    editor.on('componentregister', component => {    
+    editor.on('componentregister', component => {
         if (!component.module) return;
 
         const { nodeType, socket } = component.module;
@@ -22,19 +41,19 @@ function install(editor, { engine, modules }) {
             const builder = component.builder;
 
             component.updateModuleSockets = (node) => {
+                removeIO(node, editor);
+
                 if (!node.data.module || !modules[node.data.module]) return;
 
-                node.getConnections().map(c => editor.removeConnection(c));
-                node.inputs.length = 0;
-                node.outputs.length = 0;
-
-                moduleManager.getInputs(modules[node.data.module].data).forEach(i => {
-                    node.addInput(new Input(i.name, i.name, i.socket));
-                });
-    
-                moduleManager.getOutputs(modules[node.data.module].data).forEach(o => {
-                    node.addOutput(new Output(o.name, o.name, o.socket));
-                });
+                const data = modules[node.data.module].data;
+                const inputs = moduleManager.getInputs(data);
+                const outputs = moduleManager.getOutputs(data);
+                
+                try {
+                    addIO(node, inputs, outputs)
+                } catch (e) {
+                    return editor.trigger('warn', e);
+                }
             }
 
             component.builder = async (node) => {
