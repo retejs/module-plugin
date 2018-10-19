@@ -1,3 +1,80 @@
 Rete module plugin
 ====
 #### Rete.js plugin
+
+[Live example](https://codepen.io/Ni55aN/pen/QOEbEW)
+
+```js
+import ModulePlugin from 'rete-module-plugin';
+
+const modules = {
+    moduleName: { data: defaultData() }
+}
+
+editor.use(ModulePlugin, { engine, modules });
+
+export default class Number extends Component {
+    constructor() {
+        super('Input number');
+        this.module = {
+            nodeType: 'input',
+            socket: sockets.num
+        }
+    }
+
+    builder(node) {
+        var out = new Output('output', 'Number', sockets.num); // the key must be 'output'
+        var ctrl = new FieldControl(this.editor, 'name', {value: ''}); // the key must be 'name'
+        var ctrl2 = new FieldControl(this.editor, 'number', {type: 'number', value: 1});
+        
+        return node
+            .addControl(ctrl)
+            .addControl(ctrl2)
+            .addOutput(out);
+    }
+
+    async worker(node, inputs, outputs) {
+        if (!outputs['num'])
+            outputs['num'] = node.data.number;
+    }
+};
+
+export default class ModuleComponent extends Component {
+
+    constructor() {
+        super("Module");
+        this.module = {
+            nodeType: 'module'
+        }
+    }
+
+    builder(node) {
+        var ctrl = new FieldControl(this.editor, 'module', {value: 'Module name..'}); // the key must be 'module'
+        ctrl.onChange = () => {
+            this.updateModuleSockets(node);
+            node.update();
+        }
+        return node.addControl(ctrl);
+    }
+
+    change(node, item) {
+        node.data.module = item;
+        this.editor.trigger('process');
+    }
+}
+
+export default class extends Component {
+    constructor() {
+        super('Output number');
+    }
+
+    builder(node) {
+        var inp = new Input('input', 'Number', sockets.num); // the key must be 'input'
+        var ctrl = new FieldControl(this.editor, 'name', {value: 'num'}); // the key must be 'name'
+
+        return node
+            .addControl(ctrl)
+            .addInput(inp);
+    }
+}
+```
