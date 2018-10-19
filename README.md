@@ -13,7 +13,7 @@ const modules = {
 
 editor.use(ModulePlugin, { engine, modules });
 
-export default class Number extends Component {
+class InputNumber extends Component {
     constructor() {
         super('Input number');
         this.module = {
@@ -35,7 +35,7 @@ export default class Number extends Component {
 
     async worker(node, inputs, outputs) {
         if (!outputs['num'])
-            outputs['num'] = node.data.number;
+            outputs['num'] = node.data.number; // here you can modify received outputs of Input node
     }
 };
 
@@ -63,7 +63,7 @@ export default class ModuleComponent extends Component {
     }
 }
 
-export default class extends Component {
+class OutputNumber extends Component {
     constructor() {
         super('Output number');
     }
