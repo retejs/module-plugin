@@ -10,7 +10,9 @@
   },
   "author": "",
   "license": "ISC",
-  "dependencies": {},
+  "dependencies": {
+    "rete": "^1.0.0-alpha.11"
+  },
   "devDependencies": {
     "rete-cli": "^0.2.0"
   }
