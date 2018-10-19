@@ -34,8 +34,14 @@ function install(editor, { engine, modules }) {
 
         switch (nodeType) {
         case 'input':
+            let inputsWorker = component.worker;
+
             moduleManager.registerInput(name, socket);
-            component.worker = moduleManager.workerInputs.bind(moduleManager);
+
+            component.worker = (...args) => {
+                moduleManager.workerInputs.apply(moduleManager, args);
+                inputsWorker.apply(component, args);
+            }
             break;
         case 'module':
             const builder = component.builder;
@@ -64,8 +70,14 @@ function install(editor, { engine, modules }) {
             component.worker = moduleManager.workerModule.bind(moduleManager);
             break;
         case 'output':
+            let outputsWorker = component.worker;
+
             moduleManager.registerOutput(name, socket);
-            component.worker = moduleManager.workerOutputs.bind(moduleManager);
+
+            component.worker = (...args) => {
+                outputsWorker.apply(component, args);
+                moduleManager.workerOutputs.apply(moduleManager, args);
+            }
             break;
         default: break;
         }
