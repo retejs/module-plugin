@@ -67,7 +67,13 @@ function install(editor, { engine, modules }) {
                 await builder.call(component, node);
             }    
 
-            component.worker = moduleManager.workerModule.bind(moduleManager);
+            let moduleWorker = component.worker;
+
+
+            component.worker = async (...args) => {
+              await moduleManager.workerModule.apply(moduleManager, args);
+              moduleWorker.apply(component, args);
+            };
             break;
         case 'output':
             let outputsWorker = component.worker;
