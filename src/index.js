@@ -40,7 +40,7 @@ function install(editor, { engine, modules }) {
 
             component.worker = (...args) => {
                 moduleManager.workerInputs.apply(moduleManager, args);
-                inputsWorker.apply(component, args);
+                if (inputsWorker) inputsWorker.apply(component, args);
             }
             break;
         case 'module':
@@ -65,14 +65,13 @@ function install(editor, { engine, modules }) {
             component.builder = async (node) => {
                 component.updateModuleSockets(node);
                 await builder.call(component, node);
-            }    
+            }
 
             let moduleWorker = component.worker;
 
-
             component.worker = async (...args) => {
-              await moduleManager.workerModule.apply(moduleManager, args);
-              moduleWorker.apply(component, args);
+                await moduleManager.workerModule.apply(moduleManager, args);
+                if (moduleWorker) moduleWorker.apply(component, args);
             };
             break;
         case 'output':
@@ -81,7 +80,7 @@ function install(editor, { engine, modules }) {
             moduleManager.registerOutput(name, socket);
 
             component.worker = (...args) => {
-                outputsWorker.apply(component, args);
+                if (outputsWorker) outputsWorker.apply(component, args);
                 moduleManager.workerOutputs.apply(moduleManager, args);
             }
             break;
