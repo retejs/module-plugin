@@ -1,8 +1,9 @@
 {
   "name": "rete-module-plugin",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "",
-  "main": "build/module-plugin.min.js",
+  "main": "build/module-plugin.common.js",
+  "module": "build/module-plugin.esm.js",
   "scripts": {
     "build": "rete --build rete.config.js",
     "build:dev": "rete --build rete.config.js --watch",
@@ -11,9 +12,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "rete": "^1.0.0-alpha.11"
+    "rete": "1.1.0"
   },
   "devDependencies": {
-    "rete-cli": "^0.2.0"
+    "rete-cli": "0.5.0"
   }
 }
