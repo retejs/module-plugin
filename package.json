@@ -1,6 +1,6 @@
 {
   "name": "rete-module-plugin",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "",
   "main": "build/module-plugin.common.js",
   "module": "build/module-plugin.esm.js",
