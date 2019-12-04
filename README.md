@@ -18,7 +18,11 @@ class InputNumber extends Component {
         super('Input number');
         this.module = {
             nodeType: 'input',
-            socket: sockets.num
+            socket: sockets.num,
+            // or
+            socket(node) {
+                return sockets[node.data.socketType];
+            }
         }
     }
 
@@ -66,6 +70,14 @@ export default class ModuleComponent extends Component {
 class OutputNumber extends Component {
     constructor() {
         super('Output number');
+        this.module = {
+            nodeType: 'output',
+            socket: sockets.num,
+            // or
+            socket(node) {
+                return sockets[node.data.socketType];
+            }
+        }
     }
 
     builder(node) {

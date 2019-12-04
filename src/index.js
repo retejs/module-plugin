@@ -29,6 +29,7 @@ function install(editor, { engine, modules }) {
     editor.on('componentregister', component => {
         if (!component.module) return;
 
+        // socket - Rete.Socket instance or function that returns a socket instance
         const { nodeType, socket } = component.module;
         const name = component.name;
 

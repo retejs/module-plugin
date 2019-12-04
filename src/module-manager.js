@@ -9,15 +9,23 @@ export class ModuleManager {
         this.inputs = new Map();
         this.outputs = new Map();
     }
-    
+
     getInputs(data) {
         return extractNodes(data.nodes, this.inputs)
-            .map(n => ({ name: n.data.name, socket: this.inputs.get(n.name) }));
+            .map(node => ({ name: node.data.name, socket: this.socketFactory(node, this.inputs.get(node.name)) }));
     }
-    
+
     getOutputs(data) {
         return extractNodes(data.nodes, this.outputs)
-            .map(n => ({ name: n.data.name, socket: this.outputs.get(n.name) }));
+            .map(node => ({ name: node.data.name, socket: this.socketFactory(node, this.outputs.get(node.name)) }));
+    }
+
+    socketFactory(node, socket) {
+        socket = typeof socket === "function" ? socket(node) : socket;
+
+        if (!socket) throw new Error(`Socket not found for node with id = ${node.id} in the module`);
+
+        return socket;
     }
 
     registerInput(name, socket) {
