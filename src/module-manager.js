@@ -40,9 +40,9 @@ export class ModuleManager {
         if (!node.data.module) return;
         if (!this.modules[node.data.module]) return;
 
-        var data = this.modules[node.data.module].data;
-        var module = new Module();
-        var engine = this.engine.clone();
+        const data = this.modules[node.data.module].data;
+        const module = new Module();
+        const engine = this.engine.clone();
 
         module.read(inputs);
         await engine.process(data, null, Object.assign({}, args, { module, silent: true }));

@@ -1,32 +1,12 @@
-import { Input, Output } from 'rete';
+import { addIO, removeIO } from './utils';
 import { ModuleManager } from './module-manager';
 
-function removeIO(node, editor) {
-    node.getConnections().forEach(c => editor.removeConnection(c));
-    Array.from(node.inputs.values()).forEach(input => node.removeInput(input));
-    Array.from(node.outputs.values()).forEach(output => node.removeOutput(output));
-}
-
-function addIO(node, inputs, outputs) {
-    const uniqueInputsCount = new Set(inputs.map(i => i.name)).size;
-    const uniqueOutputsCount = new Set(outputs.map(i => i.name)).size;
-
-    if (uniqueInputsCount !== inputs.length)
-        throw `Module ${node.data.module} has duplicate inputs`;
-    if (uniqueOutputsCount !== outputs.length)
-        throw `Module ${node.data.module} has duplicate outputs`;
-
-    inputs.forEach(i => node.addInput(new Input(i.name, i.name, i.socket)))
-    outputs.forEach(o => node.addOutput(new Output(o.name, o.name, o.socket)));
-}
-
-function install(editor, { engine, modules }) {
-
-    var moduleManager = new ModuleManager(modules);
+function install(context, { engine, modules }) {
+    const moduleManager = new ModuleManager(modules);
 
     moduleManager.setEngine(engine);
         
-    editor.on('componentregister', component => {
+    context.on('componentregister', component => {
         if (!component.module) return;
 
         // socket - Rete.Socket instance or function that returns a socket instance
@@ -48,7 +28,7 @@ function install(editor, { engine, modules }) {
             const builder = component.builder;
 
             component.updateModuleSockets = (node) => {
-                removeIO(node, editor);
+                removeIO(node, context);
 
                 if (!node.data.module || !modules[node.data.module]) return;
 
@@ -59,7 +39,7 @@ function install(editor, { engine, modules }) {
                 try {
                     addIO(node, inputs, outputs)
                 } catch (e) {
-                    return editor.trigger('warn', e);
+                    return context.trigger('warn', e);
                 }
             }
 
@@ -68,7 +48,7 @@ function install(editor, { engine, modules }) {
                 await builder.call(component, node);
             }
 
-            let moduleWorker = component.worker;
+            const moduleWorker = component.worker;
 
             component.worker = async (...args) => {
                 await moduleManager.workerModule.apply(moduleManager, args);
