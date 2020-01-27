@@ -27,25 +27,27 @@ function install(context, { engine, modules }) {
         case 'module':
             const builder = component.builder;
 
-            component.updateModuleSockets = (node) => {
-                removeIO(node, context);
+            if (builder) {
+                component.updateModuleSockets = (node) => {
+                    removeIO(node, context);
 
-                if (!node.data.module || !modules[node.data.module]) return;
+                    if (!node.data.module || !modules[node.data.module]) return;
 
-                const data = modules[node.data.module].data;
-                const inputs = moduleManager.getInputs(data);
-                const outputs = moduleManager.getOutputs(data);
-                
-                try {
-                    addIO(node, inputs, outputs)
-                } catch (e) {
-                    return context.trigger('warn', e);
+                    const data = modules[node.data.module].data;
+                    const inputs = moduleManager.getInputs(data);
+                    const outputs = moduleManager.getOutputs(data);
+                    
+                    try {
+                        addIO(node, inputs, outputs)
+                    } catch (e) {
+                        return context.trigger('warn', e);
+                    }
                 }
-            }
 
-            component.builder = async (node) => {
-                component.updateModuleSockets(node);
-                await builder.call(component, node);
+                component.builder = async (node) => {
+                    component.updateModuleSockets(node);
+                    await builder.call(component, node);
+                }
             }
 
             const moduleWorker = component.worker;
